@@ -29,7 +29,7 @@
 #ifndef SEGMENT_H
 #define SEGMENT_H
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 #include <eigen3/Eigen/Dense>
 
 namespace tuw_graph

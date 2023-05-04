@@ -26,8 +26,8 @@
  *
  */
 
-#include <tuw_voronoi_graph/segment_expander.h>
-#include <ros/ros.h> //DEBUG
+#include "tuw_voronoi_graph/segment_expander.h"
+
 
 namespace tuw_graph
 {

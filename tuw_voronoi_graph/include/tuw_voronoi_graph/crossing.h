@@ -29,7 +29,8 @@
 #ifndef CROSSING_H
 #define CROSSING_H
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
+
 #include <tuw_voronoi_graph/segment.h>
 
 

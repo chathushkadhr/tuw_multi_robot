@@ -2,11 +2,19 @@
 #ifndef _GENERATOR
 #define _GENERATOR
 
-#include <nav_msgs/OccupancyGrid.h>
+#include "nav_msgs/msg/occupancy_grid.hpp"
 #include <memory>
-#include <opencv2/core/core.hpp>
 
-#define DEFAULT_MAP_NAME    "voronoi_map"
+#include "opencv2/opencv.hpp"
+#include "opencv2/imgproc/types_c.h"
+
+#include <queue>
+#include <string>
+#include "rclcpp/rclcpp.hpp"
+
+#include <tuw_voronoi_map/thinning.h>
+
+#define DEFAULT_MAP_NAME "voronoi_map"
 
 namespace voronoi_map
 {

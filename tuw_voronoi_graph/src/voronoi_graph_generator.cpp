@@ -26,8 +26,7 @@
  *
  */
 
-#include <tuw_voronoi_graph/voronoi_graph_generator.h>
-
+#include "tuw_voronoi_graph/voronoi_graph_generator.h"
 
 namespace tuw_graph
 {

@@ -1,16 +1,4 @@
-#include <ros/ros.h>
-#include <tuw_serialization/serializer.h>
-#include <memory>
-#include <opencv2/core/core.hpp>
-#include <queue>
-#include <string>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-
+#include "tuw_serialization/serializer.h"
 
 namespace tuw_graph
 {
@@ -44,38 +32,34 @@ namespace tuw_graph
     
     bool Serializer::load(const std::string &_mapPath, std::vector<Segment> &_segs, Eigen::Vector2d &_origin, float &_resolution)
     {
-        {
+        {   
+
             boost::filesystem::path graf(_mapPath + GRAPH_INFO_NAME);
             boost::filesystem::path tree(_mapPath + TREE_INFO_NAME);
             boost::filesystem::path data(_mapPath + DATA_NAME);
-
             if(!boost::filesystem::exists(graf) | !boost::filesystem::exists(tree) | !boost::filesystem::exists(data) )
-            {
+            {   
+    
                 return false;
             }
         }
-
-
         GraphInfo g;
 
         std::ifstream ifs(_mapPath + GRAPH_INFO_NAME);
         assert(ifs.good());
-        {
-            boost::archive::xml_iarchive xml(ifs);
-            xml >> boost::serialization::make_nvp("GraphInfo", g);
-        }
-        ifs.close();
-
+        boost::archive::xml_iarchive xml(ifs);
+        xml >> boost::serialization::make_nvp("GraphInfo", g);
+  
+        //ifs.close();
 
         TreeInfo t(g.SegmentLength);
 
         std::ifstream ifti(_mapPath + TREE_INFO_NAME);
         assert(ifti.good());
-        {
-            boost::archive::xml_iarchive xmlti(ifti);
-            xmlti >> boost::serialization::make_nvp("TreeInfo", t);
-        }
-        ifti.close();
+        boost::archive::xml_iarchive xmlti(ifti);
+        xmlti >> boost::serialization::make_nvp("TreeInfo", t);
+      
+        //ifti.close();
 
         _origin[0] = g.Origin.x;
         _origin[1] = g.Origin.y;
@@ -95,12 +79,9 @@ namespace tuw_graph
 
         GraphSerializer graph(segs);
         std::ifstream ifsDist(_mapPath + DATA_NAME);
-        {
-            boost::archive::xml_iarchive iaDist(ifsDist);
-            iaDist >> boost::serialization::make_nvp("graph",graph);
-        }
-        ifsDist.close();
-
+        boost::archive::xml_iarchive iaDist(ifsDist);
+        iaDist >> boost::serialization::make_nvp("graph",graph);
+        //ifsDist.close();
         _segs.clear();
 
         //Generate Segment List
@@ -117,7 +98,6 @@ namespace tuw_graph
             Segment s(pts, graph.segments_[i].minDistance);
             _segs.push_back(s);//std::make_shared<Segment>(pts, graph.segments_[i].minDistance));
         }
-
 
         //Add Dependancies
         for(int i = 0; i < graph.Length; i++)
@@ -143,15 +123,19 @@ namespace tuw_graph
 
 
         }
-
-            
+    
         return true;
     }
+
     bool Serializer::load(const std::string &_mapPath, std::vector<Segment> &_segs, Eigen::Vector2d &_origin, float &_resolution, cv::Mat &_map){
+
         if(load(_mapPath, _segs, _origin, _resolution) && boost::filesystem::exists(boost::filesystem::path(_mapPath + MAP_NAME))){            
+
              _map = cv::imread(_mapPath + MAP_NAME, cv::IMREAD_GRAYSCALE);
             return true;            
+
         } else {
+
             return false;
         }
     }
@@ -170,21 +154,18 @@ namespace tuw_graph
         GraphInfo info(_origin, _resolution, _segs.size());
         std::ofstream ofs(_mapPath + GRAPH_INFO_NAME);
         assert(ofs.good());
-        {
-            boost::archive::xml_oarchive oa(ofs);
-            oa << boost::serialization::make_nvp("GraphInfo", info);
-        }
-        ofs.close();
+        boost::archive::xml_oarchive oa(ofs);
+        oa << boost::serialization::make_nvp("GraphInfo", info);
+        //ofs.close();
 
         //Save data strucutre info (Length pred, succ, points)
         TreeInfo tInfo(_segs);
         std::ofstream ofsTree(_mapPath + TREE_INFO_NAME);
         assert(ofsTree.good());
-        {
-            boost::archive::xml_oarchive ot(ofsTree);
-            ot << boost::serialization::make_nvp("TreeInfo", tInfo);
-        }
-        ofsTree.close();
+        boost::archive::xml_oarchive ot(ofsTree);
+        ot << boost::serialization::make_nvp("TreeInfo", tInfo);
+        //ofsTree.close();
+        
 
         //Save data
         std::vector<SegmentSerializer> segs;
@@ -197,11 +178,9 @@ namespace tuw_graph
         GraphSerializer graph(segs);
 
         std::ofstream ofsGraph(_mapPath + DATA_NAME);
-        {
-            boost::archive::xml_oarchive oaGraph(ofsGraph);
-            oaGraph <<  boost::serialization::make_nvp("graph", graph);
-        }
-        ofsGraph.close();
+        boost::archive::xml_oarchive oaGraph(ofsGraph);
+        oaGraph <<  boost::serialization::make_nvp("graph", graph);
+        //ofsGraph.close();
         
     }
     void Serializer::save(const std::string &_mapPath, const std::vector<Segment> &_segs, const Eigen::Vector2d &_origin, const float &_resolution, const cv::Mat &_map){
